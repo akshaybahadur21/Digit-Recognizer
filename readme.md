@@ -1,5 +1,5 @@
-## Digit Recognition using Softmax Regression Regression
-This code helps you classify malignant and benign tumors using Logistic Regression
+## Digit Recognition using Softmax Regression
+This code helps you classify different digits using softmax regression.
 
 
 ### Code Requirements
