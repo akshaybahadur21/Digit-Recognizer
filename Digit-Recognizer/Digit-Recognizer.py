@@ -4,43 +4,81 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import input_data
-
+import cv2
 
 
 def main():
     mnist = input_data.read_data_sets("MNIST_data/", one_hot=False)
-    data = mnist.train.next_batch(1500)
+    data = mnist.train.next_batch(5000)
     train_x = data[0]
     Y = data[1]
     train_y = (np.arange(np.max(Y) + 1) == Y[:, None]).astype(int)
     # 0.00002-92
     # 0.000005-92, 93 when 200000 190500
 
-    d = model(train_x.T, train_y.T,Y, num_iters=2000, alpha=0.05, print_cost=True)
+    d = model(train_x.T, train_y.T, Y, num_iters=1500, alpha=0.05, print_cost=True)
+    w_from_model = d["w"]
+    b_from_model = d["b"]
+    print("Ready for opencv")
+    cap = cv2.VideoCapture(0)
 
+    while (cap.isOpened()):
+        ret, img = cap.read()
+        img, contours, thresh = get_img_contour_thresh(img)
+        ans=''
+        if len(contours) > 0:
+            contour = max(contours, key=cv2.contourArea)
+            if cv2.contourArea(contour) > 2500:
+                # print(predict(w_from_model,b_from_model,contour))
+                x, y, w, h = cv2.boundingRect(contour)
+                #newImage = thresh[y - 15:y + h + 15, x - 15:x + w +15]
+                newImage = thresh[y :y + h, x:x + w]
+                newImage = cv2.resize(newImage, (28, 28))
+                newImage=np.array(newImage)
+                newImage=newImage.flatten()
+                newImage=newImage.reshape(newImage.shape[0],1)
+                ans=predict(w_from_model, b_from_model, newImage)
+
+        x, y, w, h = 0, 0, 300, 300
+        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        cv2.putText(img, "Predicted Value is "+str(ans), (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+        cv2.imshow("Frame", img)
+        cv2.imshow("Contours", thresh)
+        k = cv2.waitKey(10)
+        if k == 27:
+            break
 
 # Logistic Regression as deep learning
 
+def get_img_contour_thresh(img):
+    x, y, w, h = 0, 0, 300, 300
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gray, (35, 35), 0)
+    ret, thresh1 = cv2.threshold(blur, 70, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    thresh1 = thresh1[y:y + h, x:x + w]
+    contours, hierarchy = cv2.findContours(thresh1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2:]
+    return img, contours, thresh1
+
+
 def softmax(z):
     z -= np.max(z)
-    sm = (np.exp(z).T / np.sum(np.exp(z),axis=1))
+    sm = (np.exp(z).T / np.sum(np.exp(z), axis=1))
     return sm
 
 
-
-
-def initialize(dim1,dim2):
+def initialize(dim1, dim2):
     """
 
     :param dim: size of vector w initilazied with zeros
     :return:
     """
     w = np.zeros(shape=(dim1, dim2))
-    b=np.zeros(shape=(10,1))
-    return w,b
+    b = np.zeros(shape=(10, 1))
+    return w, b
 
 
-def propagate(w,b, X, Y):
+def propagate(w, b, X, Y):
     """
 
     :param w: weights for w
@@ -52,7 +90,7 @@ def propagate(w,b, X, Y):
     m = X.shape[1]  # getting no of rows
 
     # Forward Prop
-    A = softmax((np.dot(w.T, X)+b).T)
+    A = softmax((np.dot(w.T, X) + b).T)
     cost = (-1 / m) * np.sum(Y * np.log(A))
 
     # backwar prop
@@ -65,7 +103,7 @@ def propagate(w,b, X, Y):
     return grads, cost
 
 
-def optimize(w,b, X, Y, num_iters, alpha, print_cost=False):
+def optimize(w, b, X, Y, num_iters, alpha, print_cost=False):
     """
 
     :param w: weights for w
@@ -79,7 +117,7 @@ def optimize(w,b, X, Y, num_iters, alpha, print_cost=False):
 
     costs = []
     for i in range(num_iters):
-        grads, cost = propagate(w,b, X, Y)
+        grads, cost = propagate(w, b, X, Y)
         dw = grads["dw"]
         db = grads["db"]
         w = w - alpha * dw
@@ -110,15 +148,15 @@ def predict(w, b, X):
     :param X:
     :return:
     """
-   # m = X.shape[1]
-   # y_pred = np.zeros(shape=(1, m))
-    #w = w.reshape(X.shape[0], 1)
+    # m = X.shape[1]
+    # y_pred = np.zeros(shape=(1, m))
+    # w = w.reshape(X.shape[0], 1)
 
-    y_pred = np.argmax(softmax((np.dot(w.T, X)+b).T), axis=0)
+    y_pred = np.argmax(softmax((np.dot(w.T, X) + b).T), axis=0)
     return y_pred
 
 
-def model(X_train, Y_train,Y, num_iters, alpha, print_cost):
+def model(X_train, Y_train, Y, num_iters, alpha, print_cost):
     """
 
     :param X_train:
@@ -131,8 +169,8 @@ def model(X_train, Y_train,Y, num_iters, alpha, print_cost):
     :return:
     """
 
-    w,b= initialize(X_train.shape[0],Y_train.shape[0])
-    parameters, grads, costs = optimize(w,b, X_train, Y_train, num_iters, alpha, print_cost)
+    w, b = initialize(X_train.shape[0], Y_train.shape[0])
+    parameters, grads, costs = optimize(w, b, X_train, Y_train, num_iters, alpha, print_cost)
 
     w = parameters["w"]
     b = parameters["b"]
@@ -143,7 +181,7 @@ def model(X_train, Y_train,Y, num_iters, alpha, print_cost):
     X_test = tb[0]
     y_prediction_train = predict(w, b, X_train)
     y_prediction_test = predict(w, b, X_test.T)
-    print("Train accuracy: {} %",sum(y_prediction_train == Y)/(float(len(Y))) * 100)
+    print("Train accuracy: {} %", sum(y_prediction_train == Y) / (float(len(Y))) * 100)
     print("Test accuracy: {} %", sum(y_prediction_test == Y_test) / (float(len(Y_test))) * 100)
 
     d = {"costs": costs,
@@ -164,9 +202,11 @@ def model(X_train, Y_train,Y, num_iters, alpha, print_cost):
     plt.show()
     plt.close()
 
-    pri(X_test,y_prediction_test)
+    pri(X_test, y_prediction_test)
     return d
-def pri(X_test,y_prediction_test):
+
+
+def pri(X_test, y_prediction_test):
     time.sleep(5)
     example = X_test[2, :]
     print("Prediction for the example is ", y_prediction_test[2])
@@ -175,6 +215,4 @@ def pri(X_test,y_prediction_test):
     plt.show()
 
 
-
 main()
-
