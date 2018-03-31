@@ -18,13 +18,23 @@ For more information, [see](https://www.kdnuggets.com/2016/07/softmax-regression
 1) Dataset- MNIST dataset
 2) Images of size 28 X 28
 3) Classify digits from 0 to 9
+4) Logistic Regression, Shallow Network and Deep Network Support added.
 
-### Train Acuracy ~ 96%
-### Test Acuracy ~ 94.5%
+### Train Acuracy ~ 91 to 99%
+### Test Acuracy ~ 90 to 98%
+
+<img src="https://github.com/akshaybahadur21/Digit-Recognizer/blob/master/finalgif">
+
+### Execution for writing through webcam
+To run the code, type `python Dig-Rec.py`
+
+```
+python Dig-Rec.py
+```
 
 <img src="https://github.com/akshaybahadur21/Digit-Recognizer/blob/master/digit.gif">
 
-### Execution
+### Execution for showing images through
 To run the code, type `python Digit-Recognizer.py`
 
 ```
