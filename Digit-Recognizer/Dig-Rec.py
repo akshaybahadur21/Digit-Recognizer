@@ -46,19 +46,20 @@ def main():
     while (cap.isOpened()):
         ret, img = cap.read()
         img = cv2.flip(img, 1)
-        imgHSV = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(imgHSV, Lower_green, Upper_green)
-        blur = cv2.medianBlur(mask, 15)
-        blur = cv2.GaussianBlur(blur, (5, 5), 0)
-        thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-        cnts = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[1]
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        kernel = np.ones((5, 5), np.uint8)
+        mask = cv2.inRange(hsv, Lower_green, Upper_green)
+        mask = cv2.erode(mask, kernel, iterations=2)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+        # mask=cv2.morphologyEx(mask,cv2.MORPH_CLOSE,kernel)
+        mask = cv2.dilate(mask, kernel, iterations=1)
+        res = cv2.bitwise_and(img, img, mask=mask)
+        cnts, heir = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
         center = None
 
         if len(cnts) >= 1:
             cnt = max(cnts, key=cv2.contourArea)
-            if cv2.contourArea(cnt) > 250:
-                # x, y, w, h = cv2.boundingRect(cnt)
-                # cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            if cv2.contourArea(cnt) > 200:
                 ((x, y), radius) = cv2.minEnclosingCircle(cnt)
                 cv2.circle(img, (int(x), int(y)), int(radius), (0, 255, 255), 2)
                 cv2.circle(img, center, 5, (0, 0, 255), -1)
@@ -83,7 +84,10 @@ def main():
                     if cv2.contourArea(cnt) > 2000:
                         x, y, w, h = cv2.boundingRect(cnt)
                         digit = blackboard_gray[y:y + h, x:x + w]
-                        newImage = process_letter(digit)
+                        newImage = cv2.resize(digit, (28, 28))
+                        newImage = np.array(newImage)
+                        newImage = newImage.flatten()
+                        newImage = newImage.reshape(newImage.shape[0], 1)
                         ans1 = Digit_Recognizer_LR.predict(w_LR, b_LR, newImage)
                         ans2 = Digit_Recognizer_NN.predict_nn(d2, newImage)
                         ans3 = Digit_Recognizer_DL.predict(d3, newImage)
@@ -96,24 +100,8 @@ def main():
         cv2.putText(img, "Deep Network :  " + str(ans3), (10, 470),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
         cv2.imshow("Frame", img)
-       # cv2.imshow("Contours", thresh)
         k = cv2.waitKey(10)
         if k == 27:
             break
-
-
-def process_letter(letter):
-    letter = cv2.copyMakeBorder(letter, 2, 2, 2, 2, cv2.BORDER_CONSTANT, (0, 0, 0))
-    h, w = letter.shape
-    if w > h:
-        letter = cv2.copyMakeBorder(letter, int((w - h) / 2), int((w - h) / 2), 0, 0, cv2.BORDER_CONSTANT, (0, 0, 0))
-    elif h > w:
-        letter = cv2.copyMakeBorder(letter, 0, 0, int((h - w) / 2), int((h - w) / 2), cv2.BORDER_CONSTANT, (0, 0, 0))
-    newImage = cv2.resize(letter, (28, 28))
-    newImage = np.array(newImage)
-    newImage = newImage.flatten()
-    newImage = newImage.reshape(newImage.shape[0], 1)
-    return newImage
-
 
 main()
