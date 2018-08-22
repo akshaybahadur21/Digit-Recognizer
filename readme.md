@@ -1,6 +1,8 @@
-## Digit Recognition using Softmax Regression
+# Digit Recognition using Softmax Regression [![](https://img.shields.io/github/license/sourcerer-io/hall-of-fame.svg?colorB=ff0000)](https://github.com/akshaybahadur21/Digit-Recognizer/blob/master/LICENSE.txt)  [![](https://img.shields.io/badge/Akshay-Bahadur-brightgreen.svg?colorB=ff0000)](https://akshaybahadur.com)
 This code helps you classify different digits using softmax regression.
 
+### Sourcerer
+[![](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/images/0)](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/links/0)[![](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/images/1)](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/links/1)[![](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/images/2)](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/links/2)[![](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/images/3)](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/links/3)[![](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/images/4)](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/links/4)[![](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/images/5)](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/links/5)[![](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/images/6)](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/links/6)[![](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/images/7)](https://sourcerer.io/fame/akshaybahadur21/akshaybahadur21/Digit-Recognizer/links/7)
 
 ### Code Requirements
 You can install Conda for python which resolves all the dependencies for machine learning.
