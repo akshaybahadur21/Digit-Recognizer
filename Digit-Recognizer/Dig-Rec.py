@@ -8,7 +8,7 @@
         mask = cv2.inRange(hsv, Lower_green, Upper_green)
         mask = cv2.erode(mask, kernel, iterations=2)
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-        # mask=cv2.morphologyEx(mask,cv2.MORPH_CLOSE,kernel)
+        mask=cv2.morphologyEx(mask,cv2.MORPH_CLOSE,kernel)
         mask = cv2.dilate(mask, kernel, iterations=1)
         res = cv2.bitwise_and(img, img, mask=mask)
         cnts, heir = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
