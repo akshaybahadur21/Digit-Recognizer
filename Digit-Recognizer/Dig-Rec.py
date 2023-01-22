@@ -1,47 +1,4 @@
-import numpy as np
-import input_data
-import cv2
-import Digit_Recognizer_DL
-import Digit_Recognizer_LR
-import Digit_Recognizer_NN
-from collections import deque
 
-
-def main():
-    mnist = input_data.read_data_sets("MNIST_data/", one_hot=False)
-    data = mnist.train.next_batch(5000)
-    train_x = data[0]
-    Y = data[1]
-    train_y = (np.arange(np.max(Y) + 1) == Y[:, None]).astype(int)
-    mnist = input_data.read_data_sets("MNIST_data/", one_hot=False)
-    tb = mnist.train.next_batch(1000)
-    Y_test = tb[1]
-    X_test = tb[0]
-    # 0.00002-92
-    # 0.000005-92, 93 when 200000 190500
-
-    d1 = Digit_Recognizer_LR.model(train_x.T, train_y.T, Y, X_test.T, Y_test, num_iters=1500, alpha=0.05,
-                                   print_cost=True)
-    w_LR = d1["w"]
-    b_LR = d1["b"]
-
-    d2 = Digit_Recognizer_NN.model_nn(train_x.T, train_y.T, Y, X_test.T, Y_test, n_h=100, num_iters=1500, alpha=0.05,
-                                      print_cost=True)
-
-    dims = [784, 100, 80, 50, 10]
-    d3 = Digit_Recognizer_DL.model_DL(train_x.T, train_y.T, Y, X_test.T, Y_test, dims, alpha=0.5, num_iterations=1100,
-                                      print_cost=True)
-
-    cap = cv2.VideoCapture(0)
-    Lower_green = np.array([110, 50, 50])
-    Upper_green = np.array([130, 255, 255])
-    pts = deque(maxlen=512)
-    blackboard = np.zeros((480, 640, 3), dtype=np.uint8)
-    digit = np.zeros((200, 200, 3), dtype=np.uint8)
-    flag = 0
-    ans1 = ''
-    ans2 = ''
-    ans3 = ''
 
     while (cap.isOpened()):
         ret, img = cap.read()
@@ -104,4 +61,4 @@ def main():
         if k == 27:
             break
 
-main()
+
