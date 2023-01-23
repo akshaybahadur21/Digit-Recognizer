@@ -214,3 +214,5 @@ def read_data_sets(train_dir, fake_data=False, one_hot=False, dtype=tf.float32):
   data_sets.test = DataSet(test_images, test_labels, dtype=dtype)
 
   return data_sets
+
+ 
