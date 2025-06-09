@@ -41,3 +41,16 @@ To run the code, type `python Digit-Recognizer.py`
 ```
 python Digit-Recognizer.py
 ```
+
+## 📌 Cite Us
+
+To cite this guide, use the below format:
+```
+@article{Digit-Recognizer,
+author = {Bahadur, Akshay},
+journal = {https://github.com/akshaybahadur21/Digit-Recognizer},
+month = {01},
+title = {{Digit-Recognizer}},
+year = {2018}
+}
+```
